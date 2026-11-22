@@ -1,0 +1,17 @@
+name: Mirror Repository to Codeberg
+
+on:
+  workflow_call:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - env:
+          SRC: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          DST: https://${{ secrets.CODEBERG_USER }}:${{ secrets.CODEBERG_TOKEN }}@codeberg.org/${{ github.repository }}.git
+        run: |
+          git clone --bare "$SRC" repo
+          git -C repo push --prune "$DST" '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
