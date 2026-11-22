@@ -1,0 +1,17 @@
+name: Mirror Repository to Gitlab
+
+on:
+  workflow_call:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - env:
+          SRC: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          DST: https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/${{ github.repository }}.git
+        run: |
+          git clone --bare "$SRC" repo
+          git -C repo push --prune "$DST" '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
